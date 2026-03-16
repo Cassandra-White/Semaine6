@@ -1,0 +1,20 @@
+$ModLoad imtcp.so $DefaultNetstreamDriver gtls 
+$DefaultNetstreamDriverCAFile /etc/rsyslog.d/cert/ca.pem
+$DefaultNetstreamDriverCertFile /etc/rsyslog.d/cert/server.cert.pem
+$DefaultNetstreamDriverKeyFile /etc/rsyslog.d/cert/server.key.pem
+$InputTCPServerStreamDriverAuthMode x509/name
+$InputTCPServerStreamDriverPermittedPeer <client IP address> 
+$InputTCPServerStreamDriverMode 1
+$InputTCPServerRun 10514
+
+
+
+sudo systemctl restart rsyslog
+
+
+
+
+
+
+
+
