@@ -1,0 +1,21 @@
+# Test 1 : envoyer un message Syslog depuis la Debian elle-meme
+logger -n 127.0.0.1 -P 514 --udp "BillU-Test: syslog-ng fonctionne"
+
+# Verifier que le message est arrive
+sleep 1
+grep "BillU-Test" /srv/data/logs/linux/$(hostname).log \
+    && echo "[OK] Message recu" \
+    || echo "[ERR] Message non recu -- verifier la config"
+
+# Test 2 : simuler un message venant de DC1
+logger -n 127.0.0.1 -P 514 --udp -t NXLog "Message simule depuis DC1"
+
+# Test 3 : simuler un message de script PS
+logger -n 127.0.0.1 -P 514 --udp -t "BillU-Script" "[INFO] 02-Create-Folders: test OK"
+sleep 1
+grep "BillU-Script" /srv/data/logs/scripts/billu-scripts.log \
+    && echo "[OK] Log scripts recu" \
+    || echo "[ERR] Log scripts non recu"
+
+# Voir les derniers messages recus en temps reel
+tail -f /srv/data/logs/linux/$(hostname).log
