@@ -1,0 +1,20 @@
+# Fichier : /etc/logrotate.d/billu-syslog
+# Creer avec : nano /etc/logrotate.d/billu-syslog
+
+/srv/data/logs/windows/*.log
+/srv/data/logs/linux/*.log
+/srv/data/logs/scripts/billu-scripts.log
+{
+    daily               # Rotation quotidienne
+    rotate 30           # Garder 30 jours
+    compress            # Compresser en .gz
+    delaycompress       # Compresser le fichier de J-1 (pas le fichier actif)
+    missingok           # Ne pas generer d erreur si le fichier est absent
+    notifempty          # Ne pas faire tourner si le fichier est vide
+    sharedscripts       # Executer postrotate une seule fois pour tous les fichiers
+    create 0640 root root
+    postrotate
+        # Signal a syslog-ng de recharger ses fichiers apres rotation
+        /bin/kill -HUP $(cat /var/run/syslog-ng.pid 2>/dev/null) 2>/dev/null || true
+    endscript
+}
