@@ -1,0 +1,16 @@
+# Verifier que le fichier DC1.log existe et contient des messages
+ls -lh /srv/data/logs/windows/
+tail -10 /srv/data/logs/windows/DC1.log 2>/dev/null \
+    || echo "[INFO] DC1.log pas encore cree -- attendre quelques secondes"
+
+# Suivre les logs en temps reel (Ctrl+C pour quitter)
+tail -f /srv/data/logs/windows/DC1.log
+
+# Compter les messages recus par source
+echo "=== Messages recus par source ==="
+for f in /srv/data/logs/windows/*.log; do
+    echo "  $(basename $f): $(wc -l < $f) lignes"
+done
+for f in /srv/data/logs/linux/*.log; do
+    echo "  $(basename $f): $(wc -l < $f) lignes"
+done
