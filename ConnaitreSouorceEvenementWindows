@@ -1,0 +1,7 @@
+$logName = "BillU"
+$source  = "BillU-Scripts"
+
+if (-not [System.Diagnostics.EventLog]::SourceExists($source)) {
+    New-EventLog -LogName $logName -Source $source
+    Write-Host "[OK] Journal '$logName' créé." -ForegroundColor Green
+}
