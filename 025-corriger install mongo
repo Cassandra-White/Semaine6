@@ -3,18 +3,13 @@ sudo apt-get purge mongodb-org*
 sudo rm /etc/apt/sources.list.d/mongodb-org-6.0.list
 
 
-# Importer la clé GPG (version 4.4)
-wget -qO - https://www.mongodb.org/static/pgp/server-4.4.asc | sudo apt-key add -
+sudo rm /etc/apt/sources.list.d/mongodb-org-*.list
+echo "deb [signed-by=/usr/share/keyrings/mongodb-server-4.4.gpg] http://repo.mongodb.org/apt/debian buster/mongodb-org/4.4 main" | sudo tee /etc/apt/sources.list.d/mongodb-org-4.4.list
 
-# Ajouter le dépôt 4.4 (on utilise le flux buster pour la compatibilité)
-echo "deb http://repo.mongodb.org/apt/debian buster/mongodb-org/4.4 main" | sudo tee /etc/apt/sources.list.d/mongodb-org-4.4.list
+curl -fsSL https://www.mongodb.org/static/pgp/server-4.4.asc | sudo gpg --dearmor -o /usr/share/keyrings/mongodb-server-4.4.gpg
 
-
-
-
-sudo apt-get update
-sudo apt-get install -y mongodb-org=4.4.29 mongodb-org-server=4.4.29 mongodb-org-shell=4.4.29 mongodb-org-mongos=4.4.29 mongodb-org-tools=4.4.29
-
+sudo apt update
+sudo apt install -y mongodb-org=4.4.29 mongodb-org-server=4.4.29 mongodb-org-shell=4.4.29 mongodb-org-mongos=4.4.29 mongodb-org-tools=4.4.29
 
 
 sudo systemctl daemon-reload
