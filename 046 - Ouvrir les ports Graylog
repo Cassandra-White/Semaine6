@@ -1,0 +1,8 @@
+# Si UFW est actif
+ufw allow 9000/tcp    comment "Graylog Web UI"
+ufw allow 514/udp     comment "Syslog UDP entrant"
+ufw allow 514/tcp     comment "Syslog TCP entrant"
+ufw allow 12201/udp   comment "GELF UDP entrant"
+
+# Verifier que Graylog ecoute
+ss -tulnp | grep -E "9000|514|12201"
