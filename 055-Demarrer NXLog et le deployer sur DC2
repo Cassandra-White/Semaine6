@@ -1,0 +1,17 @@
+# Demarrer NXLog sur DC1
+Start-Service nxlog
+Set-Service   nxlog -StartupType Automatic
+Get-Service   nxlog | Format-Table Name, Status, StartType
+
+# Voir les logs NXLog si probleme
+Get-Content "C:\Program Files\nxlog\data\nxlog.log" -Tail 15
+
+# Deployer la meme config sur DC2 (NXLog doit etre installe sur DC2 aussi)
+Copy-Item "C:\Program Files\nxlog\conf\nxlog.conf" `
+          "\\DC2\C$\Program Files\nxlog\conf\nxlog.conf" -Force
+
+Invoke-Command -ComputerName DC2 -ScriptBlock {
+    Start-Service nxlog
+    Set-Service   nxlog -StartupType Automatic
+    Get-Service   nxlog | Select-Object Name, Status
+}
