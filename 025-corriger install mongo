@@ -1,13 +1,22 @@
-# 1. Corriger les permissions des dossiers MongoDB
-mkdir -p /var/lib/mongodb /var/log/mongodb
-chown -R mongodb:mongodb /var/lib/mongodb /var/log/mongodb
-chmod 755 /var/lib/mongodb
+sudo systemctl stop mongod
+sudo apt-get purge mongodb-org*
+sudo rm /etc/apt/sources.list.d/mongodb-org-6.0.list
 
-# 2. Supprimer le fichier de verrou si present (crash precedent)
-rm -f /var/lib/mongodb/mongod.lock
-rm -f /tmp/mongodb-27017.sock
 
-# 3. Relancer
-systemctl restart mongod
-sleep 5
-systemctl status mongod --no-pager | grep "Active:"
+# Importer la clé GPG (version 4.4)
+wget -qO - https://www.mongodb.org/static/pgp/server-4.4.asc | sudo apt-key add -
+
+# Ajouter le dépôt 4.4 (on utilise le flux buster pour la compatibilité)
+echo "deb http://repo.mongodb.org/apt/debian buster/mongodb-org/4.4 main" | sudo tee /etc/apt/sources.list.d/mongodb-org-4.4.list
+
+
+
+
+sudo apt-get update
+sudo apt-get install -y mongodb-org=4.4.29 mongodb-org-server=4.4.29 mongodb-org-shell=4.4.29 mongodb-org-mongos=4.4.29 mongodb-org-tools=4.4.29
+
+
+
+sudo systemctl daemon-reload
+sudo systemctl enable mongod
+sudo systemctl start mongod
