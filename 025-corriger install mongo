@@ -1,0 +1,13 @@
+# 1. Corriger les permissions des dossiers MongoDB
+mkdir -p /var/lib/mongodb /var/log/mongodb
+chown -R mongodb:mongodb /var/lib/mongodb /var/log/mongodb
+chmod 755 /var/lib/mongodb
+
+# 2. Supprimer le fichier de verrou si present (crash precedent)
+rm -f /var/lib/mongodb/mongod.lock
+rm -f /tmp/mongodb-27017.sock
+
+# 3. Relancer
+systemctl restart mongod
+sleep 5
+systemctl status mongod --no-pager | grep "Active:"
