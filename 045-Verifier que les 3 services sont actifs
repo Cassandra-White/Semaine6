@@ -1,7 +1,0 @@
-# Les 3 doivent etre "active (running)" avant d ouvrir l interface web
-systemctl is-active mongod         && echo "[OK] MongoDB"       || echo "[ERR] MongoDB arrete"
-systemctl is-active opensearch     && echo "[OK] OpenSearch"    || echo "[ERR] OpenSearch arrete"
-systemctl is-active graylog-server && echo "[OK] Graylog"       || echo "[ERR] Graylog arrete"
-
-# Si Graylog ne demarre pas : voir les logs de demarrage
-journalctl -u graylog-server -n 50 --no-pager

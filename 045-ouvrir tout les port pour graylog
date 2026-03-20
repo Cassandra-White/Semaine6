@@ -1,0 +1,8 @@
+ufw allow 9000/tcp  comment "Graylog Web UI"
+ufw allow 514/udp   comment "Syslog UDP"
+ufw allow 12201/udp comment "GELF UDP"
+ufw allow 12201/tcp comment "GELF TCP"
+
+# Verifier
+ufw status
+ss -tulnp | grep -E "9000|514|12201"
