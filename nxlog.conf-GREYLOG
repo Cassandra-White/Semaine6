@@ -67,3 +67,12 @@ Invoke-Command -ComputerName DC2 -ScriptBlock {
     Set-Service   nxlog -StartupType Automatic
     Get-Service   nxlog | Select-Object Name, Status
 }
+
+
+
+# Verifier la syntaxe avant de demarrer
+& "C:\Program Files\nxlog\nxlog.exe" -v -c "C:\Program Files\nxlog\conf\nxlog.conf" 2>&1
+
+# Si pas d erreur :
+Start-Service nxlog
+Get-Content "C:\Program Files\nxlog\data\nxlog.log" -Tail 10
