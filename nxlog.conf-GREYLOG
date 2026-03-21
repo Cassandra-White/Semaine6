@@ -1,33 +1,27 @@
-## NXLog configuration BillU Sprint 6
-## Envoie les logs vers Graylog 172.16.100.21 port 12201 GELF UDP
+## NXLog configuration BillU Sprint 6 -- CORRIGE
 
 Moduledir %ROOT%\modules
 CacheDir  %ROOT%\data
 LogFile   %ROOT%\data\nxlog.log
 LogLevel  INFO
 
-# Extension GELF : format JSON pour Graylog
-<Extension _gelf>
-    Module  xm_gelf
+## xm_json : disponible dans NXLog CE (contrairement a xm_gelf)
+<Extension _json>
+    Module  xm_json
 </Extension>
 
-# Source 1 : journaux Windows
+## Source 1 : journaux Windows
 <Input in_windows>
     Module      im_msvistalog
-    <QueryList>
-        <Query Id="0">
-            <Select Path="Security">*</Select>
-            <Select Path="System">*[System[(Level=1 or Level=2 or Level=3)]]</Select>
-            <Select Path="Application">*[System[(Level=1 or Level=2 or Level=3)]]</Select>
-        </Query>
-    </QueryList>
+    Query       <QueryList><Query Id="0"><Select Path="Security">*</Select><Select Path="System">*[System[(Level=1 or Level=2 or Level=3)]]</Select><Select Path="Application">*[System[(Level=1 or Level=2 or Level=3)]]</Select></Query></QueryList>
     Exec        $short_message = $Message;
     Exec        $_application_name = "Windows-Events";
-    Exec        to_gelf();
+    Exec        $host = hostname();
+    Exec        $version = "1.1";
+    Exec        to_json();
 </Input>
 
-# Source 2 : fichiers de logs CMTrace des scripts PowerShell BillU
-# NXLog lit les fichiers et envoie chaque ligne comme un message GELF
+## Source 2 : fichiers CMTrace BillU
 <Input in_billu_scripts>
     Module          im_file
     File            "C:\\Windows\\Logs\\BillU\\*.log"
@@ -35,18 +29,19 @@ LogLevel  INFO
     ReadFromLast    TRUE
     Exec            $short_message = $raw_event;
     Exec            $_application_name = "BillU-Script";
-    Exec            to_gelf();
+    Exec            $host = hostname();
+    Exec            $version = "1.1";
+    Exec            to_json();
 </Input>
 
-# Destination : Graylog GELF UDP port 12201
+## Destination : Graylog UDP port 12201
 <Output out_graylog>
-    Module      om_udp
-    Host        172.16.100.21
-    Port        12201
-    OutputType  GELF_UDP
+    Module  om_udp
+    Host    172.16.100.21
+    Port    12201
 </Output>
 
-# Routing : toutes les sources vers Graylog
+## Routing
 <Route r_all>
     Path    in_windows, in_billu_scripts => out_graylog
 </Route>
