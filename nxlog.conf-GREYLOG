@@ -49,7 +49,7 @@ PS Admin -- DC1
 Start-Service nxlog
 Set-Service   nxlog -StartupType Automatic
 Get-Service   nxlog | Format-Table Name, Status, StartType
-
+Start-Sleep 3
 # Voir les logs NXLog si probleme
 Get-Content "C:\Program Files\nxlog\data\nxlog.log" -Tail 15
 
