@@ -1,8 +1,8 @@
 ## NXLog configuration BillU Sprint 6 -- CORRIGE
 
-Moduledir %ROOT%\modules
-CacheDir  %ROOT%\data
-LogFile   %ROOT%\data\nxlog.log
+Moduledir C:\Program Files\nxlog\modules
+CacheDir  C:\Program Files\nxlog\data
+LogFile   C:\Program Files\nxlog\data\nxlog.log
 LogLevel  INFO
 
 ## xm_json : disponible dans NXLog CE (contrairement a xm_gelf)
