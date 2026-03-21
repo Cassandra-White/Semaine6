@@ -50,3 +50,25 @@ LogLevel  INFO
 <Route r_all>
     Path    in_windows, in_billu_scripts => out_graylog
 </Route>
+Demarrer NXLog et le deployer sur DC2
+PS Admin -- DC1
+# Demarrer NXLog sur DC1
+Start-Service nxlog
+Set-Service   nxlog -StartupType Automatic
+Get-Service   nxlog | Format-Table Name, Status, StartType
+
+# Voir les logs NXLog si probleme
+Get-Content "C:\Program Files\nxlog\data\nxlog.log" -Tail 15
+
+# Tester la connectivite vers Graylog
+Test-NetConnection 172.16.100.21 -Port 12201
+
+# Deployer sur DC2
+Copy-Item "C:\Program Files\nxlog\conf\nxlog.conf" `
+          "\\DC2\C$\Program Files\nxlog\conf\nxlog.conf" -Force
+
+Invoke-Command -ComputerName DC2 -ScriptBlock {
+    Start-Service nxlog
+    Set-Service   nxlog -StartupType Automatic
+    Get-Service   nxlog | Select-Object Name, Status
+}
