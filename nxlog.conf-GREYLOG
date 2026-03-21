@@ -1,50 +1,48 @@
-## NXLog configuration BillU Sprint 6 -- CORRIGE
-
 Moduledir C:\Program Files\nxlog\modules
 CacheDir  C:\Program Files\nxlog\data
 LogFile   C:\Program Files\nxlog\data\nxlog.log
 LogLevel  INFO
 
-## xm_json : disponible dans NXLog CE (contrairement a xm_gelf)
 <Extension _json>
-    Module  xm_json
+    Module xm_json
 </Extension>
 
-## Source 1 : journaux Windows
-<Input in_windows>
-    Module      im_msvistalog
-    Query       <QueryList><Query Id="0"><Select Path="Security">*</Select><Select Path="System">*[System[(Level=1 or Level=2 or Level=3)]]</Select><Select Path="Application">*[System[(Level=1 or Level=2 or Level=3)]]</Select></Query></QueryList>
-    Exec        $short_message = $Message;
-    Exec        $_application_name = "Windows-Events";
-    Exec        $host = hostname();
-    Exec        $version = "1.1";
-    Exec        to_json();
+<Input in_security>
+    Module  im_msvistalog
+    Channel Security
+    Exec    $short_message = $Message; $_application_name = "Windows-Events"; to_json();
 </Input>
 
-## Source 2 : fichiers CMTrace BillU
+<Input in_system>
+    Module  im_msvistalog
+    Channel System
+    Exec    $short_message = $Message; $_application_name = "Windows-Events"; to_json();
+</Input>
+
+<Input in_application>
+    Module  im_msvistalog
+    Channel Application
+    Exec    $short_message = $Message; $_application_name = "Windows-Events"; to_json();
+</Input>
+
 <Input in_billu_scripts>
-    Module          im_file
-    File            "C:\\Windows\\Logs\\BillU\\*.log"
-    SavePos         TRUE
-    ReadFromLast    TRUE
-    Exec            $short_message = $raw_event;
-    Exec            $_application_name = "BillU-Script";
-    Exec            $host = hostname();
-    Exec            $version = "1.1";
-    Exec            to_json();
+    Module       im_file
+    File         "C:\\Windows\\Logs\\BillU\\*.log"
+    SavePos      TRUE
+    ReadFromLast TRUE
+    Exec         $short_message = $raw_event; $_application_name = "BillU-Script"; to_json();
 </Input>
 
-## Destination : Graylog UDP port 12201
 <Output out_graylog>
-    Module  om_udp
-    Host    172.16.100.21
-    Port    12201
+    Module om_udp
+    Host   172.16.100.21
+    Port   12201
 </Output>
 
-## Routing
 <Route r_all>
-    Path    in_windows, in_billu_scripts => out_graylog
+    Path in_security, in_system, in_application, in_billu_scripts => out_graylog
 </Route>
+
 Demarrer NXLog et le deployer sur DC2
 PS Admin -- DC1
 # Demarrer NXLog sur DC1
