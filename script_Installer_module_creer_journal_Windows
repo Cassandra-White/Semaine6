@@ -1,0 +1,26 @@
+# Creer le dossier et copier le module
+New-Item "C:\Scripts\BillU" -ItemType Directory -Force | Out-Null
+Copy-Item ".\BillU-Logger.psm1" "C:\Scripts\BillU\BillU-Logger.psm1" -Force
+
+# Creer le journal BillU dans l Observateur d evenements (UNE SEULE FOIS par machine)
+if (-not [System.Diagnostics.EventLog]::SourceExists("BillU-Scripts")) {
+    New-EventLog -LogName "BillU" -Source "BillU-Scripts"
+    Write-Host "[OK] Journal BillU cree"
+}
+
+# Tester le module
+Import-Module "C:\Scripts\BillU\BillU-Logger.psm1" -Force
+
+Write-BillULog -Script "Test-Logger" -Level INFO    -Msg "Test INFO -- installation OK"
+Write-BillULog -Script "Test-Logger" -Level WARNING -Msg "Test WARNING -- attention"
+Write-BillULog -Script "Test-Logger" -Level ERROR   -Msg "Test ERROR -- erreur detectee"
+
+# Verifier le fichier CMTrace genere
+Get-Content "C:\Windows\Logs\BillU\Test-Logger.log"
+# Chaque ligne doit commencer par <![LOG[
+
+# Ouvrir dans CMTrace (si installe)
+# Start-Process "C:\Tools\CMTrace.exe" "C:\Windows\Logs\BillU\Test-Logger.log"
+
+# Verifier l Observateur d evenements
+Get-BillULog -Script "Test-Logger" -Last 5
