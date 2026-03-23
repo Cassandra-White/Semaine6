@@ -1,0 +1,14 @@
+Import-Module "C:\Scripts\BillU\BillU-Logger.psm1" -Force
+
+# On définit le nom du script pour que les logs soient bien classés
+$sn = "04-Assign-ServiceGroups"
+
+
+
+Write-BillULog -Script $sn `
+    -Level INFO `
+    -Msg "ale.kriss --> GG_COMM_Users"
+
+Write-BillULog -Script $sn `
+    -Level ERROR `
+    -Msg "Groupe absent : $_"
