@@ -1,0 +1,43 @@
+# Test 1 : les 3 services actifs
+systemctl is-active mongod         && echo "[OK] MongoDB"    || echo "[ERR] MongoDB"
+systemctl is-active opensearch     && echo "[OK] OpenSearch" || echo "[ERR] OpenSearch"
+systemctl is-active graylog-server && echo "[OK] Graylog"    || echo "[ERR] Graylog"
+
+# Test 2 : ports en ecoute
+ss -tulnp | grep -E "9000|514|12201"
+# Doit montrer : graylog-server sur 9000, graylog sur 514 et 12201
+
+# Test 3 : envoyer un message de test rsyslog
+logger "BillU-Validation: test Ubuntu -> Graylog"
+# Chercher dans Graylog Search : BillU-Validation
+
+# Test 4 : envoyer un GELF directement depuis Ubuntu
+MSG='{"version":"1.1","host":"Ubuntu-test","short_message":"Test GELF direct","level":6}'
+echo -n "$MSG" | nc -u -w1 127.0.0.1 12201
+# Chercher dans Graylog : Test GELF direct
+Tests DC1 -- NXLog et BillU-Logger
+PS Admin -- DC1
+# Test 5 : NXLog tourne
+Get-Service nxlog | Format-Table Name, Status
+
+# Test 6 : connectivite vers Graylog
+Test-NetConnection 172.16.100.21 -Port 12201
+# TcpTestSucceeded doit etre True
+
+# Test 7 : module BillU-Logger
+Import-Module "C:\Scripts\BillU\BillU-Logger.psm1" -Force
+
+Write-BillULog -Script "Validation-Sprint6" -Level INFO    -Msg "Validation INFO OK"
+Write-BillULog -Script "Validation-Sprint6" -Level WARNING -Msg "Validation WARNING OK"
+Write-BillULog -Script "Validation-Sprint6" -Level ERROR   -Msg "Validation ERROR OK"
+
+# Test 8 : verifier le fichier CMTrace
+Get-Content "C:\Windows\Logs\BillU\Validation-Sprint6.log"
+# Chaque ligne doit commencer par <![LOG[
+
+# Test 9 : verifier l Observateur d evenements
+Get-BillULog -Script "Validation-Sprint6" -Last 3
+# EventID 1000=INFO, 2000=WARNING, 3000=ERROR
+
+# Test 10 : verifier dans Graylog (apres quelques secondes)
+# http://172.16.100.21:9000 > Search > _application_name:BillU-Script
